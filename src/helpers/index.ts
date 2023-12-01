@@ -18,9 +18,14 @@ export const mapArgs = (args: string[]) => {
   const argMap = new Map<string, string>();
 
   args.forEach(arg => {
-    const [key, value] = arg.split("=");
-    if (key.startsWith("--")) {
-      argMap.set(key.substring(2), value);
+    if (arg.startsWith("--")) {
+      const index = arg.indexOf("=");
+      if (index === -1) {
+        LogError(`Invalid argument format: ${arg}`);
+      }
+      const key = arg.substring(2, index);
+      const value = arg.substring(index + 1);
+      argMap.set(key, value);
     } else {
       LogError(`Invalid argument format: ${arg}`);
     }
