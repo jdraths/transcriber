@@ -1,8 +1,8 @@
 {
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
-    },
-    "eslint.workingDirectories": [{ "mode": "auto" }],
-    "WillLuke.nextjs.addTypesOnSave": true,
-    "WillLuke.nextjs.hasPrompted": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "WillLuke.nextjs.addTypesOnSave": true,
+  "WillLuke.nextjs.hasPrompted": true
 }

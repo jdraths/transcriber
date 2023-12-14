@@ -34,7 +34,7 @@ export const transcribe = async ({
     auth: process.env.REPLICATE_API_TOKEN,
   });
   const output = await replicate.run(
-    "thomasmol/whisper-diarization:249170b5f45bb1e0aa68440f1f28ef25f5ee50a882af365555068f1f61ae791b",
+    "thomasmol/whisper-diarization:c558e6f7efba0b8e6f4155be9e930d5bd92d788cd3e31396f4c33b5aac984975",
     {
       input,
     },
