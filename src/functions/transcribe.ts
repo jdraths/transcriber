@@ -26,15 +26,15 @@ export const transcribe = async ({
     language: "en",
   };
   LogInfo(input);
-  // const inputFilePath = "";
-  // const base64Data = encodeAudioToBase64(inputFilePath);
-  const outputJsonPath = `./output/${filename}.json`;
+
+  const outputDir = "./output";
+  const outputJsonPath = `${outputDir}/${filename}.json`;
 
   const replicate = new Replicate({
     auth: process.env.REPLICATE_API_TOKEN,
   });
   const output = await replicate.run(
-    "thomasmol/whisper-diarization:c558e6f7efba0b8e6f4155be9e930d5bd92d788cd3e31396f4c33b5aac984975",
+    "thomasmol/whisper-diarization:7fa6110280767642cf5a357e4273f27ec10ebb60c107be25d6e15f928fd03147",
     {
       input,
     },
@@ -42,7 +42,10 @@ export const transcribe = async ({
 
   const jsonString = JSON.stringify(output);
 
-  // Define the file path where you want to save the JSON data
+  // Check if the directory exists, if not, create it
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true }); // The option `recursive` is set to true to ensure that it creates the directory if it doesn't exist
+  }
 
   // Write the JSON data to the file
   fs.writeFileSync(outputJsonPath, jsonString, "utf-8");
