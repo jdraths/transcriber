@@ -15,9 +15,9 @@ const prompt = argMap.get("prompt");
 if (!prompt) {
   LogError("'prompt' argument is required. A good prompt is 'John Doe & Jane Smith interviewing Sam Samson'ex");
 }
-const audioUrl = argMap.get("url");
-if (!audioUrl) {
-  LogError("'url' argument is required. It should be the url where the transcriber can download the audio");
+const filepath = argMap.get("filepath");
+if (!filepath) {
+  LogError("'filepath' argument is required. It should be the url where the transcriber can download the audio");
 }
 const numSpeakers = Number(argMap.get("speakers"));
 if (!numSpeakers) {
@@ -25,9 +25,9 @@ if (!numSpeakers) {
 }
 
 // process func
-if (!!filename && !!prompt && !!audioUrl) {
-  const outputJsonPath = await transcribe({ filename, audioUrl, prompt, numSpeakers });
-  const outputMdPath = transformJson({ inputJsonPath: outputJsonPath, filename });
+if (!!filename && !!prompt && !!filepath) {
+  const outputTranscription = await transcribe({ filename, localFilePath: filepath, prompt, numSpeakers });
+  const outputMdPath = transformJson({ outputTranscription, filename });
   LogInfo("process complete");
   LogInfo(outputMdPath);
 }

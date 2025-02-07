@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { LogInfo } from "../helpers";
+import { TranscribeResult } from "./transcribe";
 
 // Helper function to format timestamps
 function formatTimestamp(timestamp: string): string {
@@ -12,10 +13,19 @@ function formatTimestamp(timestamp: string): string {
   return `[${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}]`;
 }
 
-export const transformJson = ({ inputJsonPath, filename }: { inputJsonPath: string; filename: string }) => {
+export const transformJson = ({
+  outputTranscription,
+  filename,
+}: {
+  outputTranscription: TranscribeResult;
+  filename: string;
+}) => {
   LogInfo("transforming json to md");
   const outputMdPath = `./output/${filename}.md`;
 
+  const { outputPath: inputJsonPath, s3Key } = outputTranscription;
+  // Write the Markdown to the output file
+  fs.writeFileSync(outputMdPath, `## s3Key: ${s3Key}`, "utf-8");
   // Read the input JSON file
   const inputData = JSON.parse(fs.readFileSync(inputJsonPath, "utf-8"));
 
@@ -29,9 +39,9 @@ export const transformJson = ({ inputJsonPath, filename }: { inputJsonPath: stri
       // Check if the speaker has changed
       if (segment.speaker !== currentSpeaker) {
         currentSpeaker = segment.speaker;
-        currentTimestamp = formatTimestamp(segment.start);
+        currentTimestamp = formatTimestamp(String(segment.start));
       } else {
-        currentTimestamp = formatTimestamp(segment.end);
+        currentTimestamp = formatTimestamp(String(segment.end));
       }
 
       return `**${segment.speaker}**\n${currentTimestamp}\n${segment.text}\n\n`;

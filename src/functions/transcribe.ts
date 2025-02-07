@@ -1,25 +1,32 @@
 import * as fs from "fs";
 import Replicate from "replicate";
 import { LogInfo } from "../helpers";
+import { uploadFileToS3 } from "./uploadFile";
+
+export interface TranscribeResult {
+  outputPath: string;
+  s3Key: string; // Store the S3 key for future reference
+}
 
 export const transcribe = async ({
   filename,
-  audioUrl,
+  localFilePath,
   prompt,
   numSpeakers = 2,
 }: {
   filename: string;
-  audioUrl: string;
+  localFilePath: string;
   prompt: string;
   numSpeakers?: number;
-}) => {
+}): Promise<TranscribeResult> => {
   LogInfo("starting transcription");
+
+  // Upload the file and get a pre-signed URL
+  const { signedUrl, key } = await uploadFileToS3(localFilePath);
 
   const input = {
     prompt,
-    // file: inputFilePath,
-    // file_string: base64Data,
-    file_url: audioUrl,
+    file_url: signedUrl,
     num_speakers: numSpeakers,
     group_segments: true,
     offset_seconds: 0,
@@ -34,7 +41,7 @@ export const transcribe = async ({
     auth: process.env.REPLICATE_API_TOKEN,
   });
   const output = await replicate.run(
-    "thomasmol/whisper-diarization:7fa6110280767642cf5a357e4273f27ec10ebb60c107be25d6e15f928fd03147",
+    "thomasmol/whisper-diarization:cbd15da9f839c5f932742f86ce7def3a03c22e2b4171d42823e83e314547003f",
     {
       input,
     },
@@ -44,7 +51,7 @@ export const transcribe = async ({
 
   // Check if the directory exists, if not, create it
   if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true }); // The option `recursive` is set to true to ensure that it creates the directory if it doesn't exist
+    fs.mkdirSync(outputDir, { recursive: true });
   }
 
   // Write the JSON data to the file
@@ -52,5 +59,9 @@ export const transcribe = async ({
 
   LogInfo("Transcription Complete.");
   LogInfo(`JSON data saved to ${outputJsonPath}`);
-  return outputJsonPath;
+
+  return {
+    outputPath: outputJsonPath,
+    s3Key: key,
+  };
 };

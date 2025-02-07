@@ -15,7 +15,7 @@ build
 
 # transcripts
 output/*
-
+src/helpers/processTranscript.ts
 
 # misc
 .DS_Store
